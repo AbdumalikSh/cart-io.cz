@@ -4,5 +4,8 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
+  build: {
+    outDir: "dist", // This is the folder Vercel needs
+  },
   plugins: [react(), tailwindcss()],
 });
