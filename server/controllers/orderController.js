@@ -34,7 +34,7 @@ export const placeOrderCOD = async (req, res) => {
 // Get Order By User ID: /api/order/user
 export const getUserOrders = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const userId = req.userId;
     const orders = await Order.find({
       userId,
       $or: [{ paymentType: "COD" }, { isPaid: true }],
@@ -43,7 +43,7 @@ export const getUserOrders = async (req, res) => {
       .sort({ createdAt: -1 });
     res.json({ success: true, orders });
   } catch (error) {
-    console.log(message.error);
+    console.log(error);
     res.json({ success: false, message: error.message });
   }
 };

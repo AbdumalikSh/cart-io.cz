@@ -154,6 +154,7 @@ export const AppContextProvider = ({ children }) => {
     updateCartItem,
     removeFromCart,
     cartItems,
+    setCartItems,
     searchQuery,
     setSearchQuery,
     getCartCount,
