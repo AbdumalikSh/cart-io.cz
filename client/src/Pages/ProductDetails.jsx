@@ -17,7 +17,7 @@ const ProductDetails = () => {
     if (products.length > 0) {
       let productsCopy = products.slice();
       productsCopy = productsCopy.filter(
-        (item) => product.category === item.category
+        (item) => product.category === item.category,
       );
       setRelatedProducts(productsCopy.slice(0, 5));
     }
@@ -81,13 +81,13 @@ const ProductDetails = () => {
 
             <div className="mt-6">
               <p className="text-gray-500/70 line-through">
-                MRP: {currency}
-                {product.price}
+                MRP: {product.price}
+                {currency}
               </p>
 
               <p className="text-2xl font-medium">
-                MRP: {currency}
-                {product.offerPrice}
+                MRP: {product.offerPrice}
+                {currency}
               </p>
 
               <span className="text-gray-500/70">(inclusive of all taxes)</span>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAppContext } from "../../Context/AppContext";
-import { assets, dummyOrders } from "../../assets/assets";
+import { assets } from "../../assets/assets";
 import toast from "react-hot-toast";
 
 const Orders = () => {
@@ -67,8 +67,8 @@ const Orders = () => {
             </div>
 
             <p className="font-medium text-lg my-auto">
-              {currency}
               {order.amount}
+              {currency}
             </p>
 
             <div className="flex flex-col text-sm md:text-base text-black/60">

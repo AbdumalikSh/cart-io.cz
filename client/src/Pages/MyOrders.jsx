@@ -40,8 +40,8 @@ const MyOrders = () => {
             <span>Order ID : {order._id}</span>
             <span>Payment : {order.paymentType}</span>
             <span>
-              Total Amount : {currency}
-              {order.amount}
+              Total Amount : {order.amount}
+              {currency}
             </span>
           </p>
           {order.items.map((item, index) => (
@@ -73,8 +73,8 @@ const MyOrders = () => {
                 <p>Date: {new Date(order.createdAt).toLocaleDateString()}</p>
               </div>
               <p className="text-primary text-lg font-medium">
-                Amount: {currency}
-                {item.product.offerPrice * item.quantity}
+                Amount: {item.product.offerPrice * item.quantity}
+                {currency}
               </p>
             </div>
           ))}

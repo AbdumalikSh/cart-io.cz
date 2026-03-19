@@ -72,6 +72,21 @@ const Cart = () => {
         } else {
           toast.error(data.message);
         }
+      } else {
+        //Place order with Stripe
+        const { data } = await axios.post("/api/order/stripe", {
+          userId: user._id,
+          items: cartArray.map((item) => ({
+            product: item._id,
+            quantity: item.quantity,
+          })),
+          address: selectedAddress._id,
+        });
+        if (data.success) {
+          window.location.replace(data.url);
+        } else {
+          toast.error(data.message);
+        }
       }
     } catch (error) {
       toast.error(error.message);
@@ -260,8 +275,8 @@ const Cart = () => {
           <p className="flex justify-between">
             <span>Price</span>
             <span>
-              {currency}
               {getCartAmount()}
+              {currency}
             </span>
           </p>
 
@@ -273,16 +288,16 @@ const Cart = () => {
           <p className="flex justify-between">
             <span>Tax (2%)</span>
             <span>
-              {currency}
               {(getCartAmount() * 2) / 100}
+              {currency}
             </span>
           </p>
 
           <p className="flex justify-between text-lg font-medium mt-3">
             <span>Total Amount:</span>
             <span>
-              {currency}
               {getCartAmount() + (getCartAmount() * 2) / 100}
+              {currency}
             </span>
           </p>
         </div>
