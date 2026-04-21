@@ -1,6 +1,4 @@
-import React from "react";
 import Navbar from "./Components/Navbar";
-import MainBanner from "./Components/MainBanner";
 import Home from "./Pages/Home";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";

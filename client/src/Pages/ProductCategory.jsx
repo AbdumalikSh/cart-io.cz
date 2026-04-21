@@ -1,17 +1,19 @@
 import React from "react";
-import { useAppContext } from "../Context/AppContext";
+// import { useAppContext } from "../Context/AppContext";
 import { useParams } from "react-router-dom";
 import { categories } from "../assets/assets";
 import ProductCard from "../Components/ProductCard";
+import { useSelector } from "react-redux";
 
 const ProductCategory = () => {
-  const { products } = useAppContext();
+  // const { products } = useAppContext();
+  const products = useSelector((state) => state.product.products);
   const { category } = useParams();
   const searchCategory = categories.find(
-    (item) => item.path.toLowerCase() === category
+    (item) => item.path.toLowerCase() === category,
   );
   const filteredProducts = products.filter(
-    (product) => product.category.toLowerCase() === category
+    (product) => product.category.toLowerCase() === category,
   );
   return (
     <div className="mt-16">

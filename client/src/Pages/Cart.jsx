@@ -1,41 +1,66 @@
 import React, { useEffect, useState } from "react";
-import { useAppContext } from "../Context/AppContext";
+// import { useAppContext } from "../Context/AppContext";
 import { assets } from "../assets/assets";
 import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../api/axios";
+import {
+  removeFromCart,
+  getCartCount,
+  updateCartItem,
+  getCartAmount,
+  setCartItems,
+} from "../store/features/cart/cartSlice";
 
 const Cart = () => {
-  const {
-    products,
-    currency,
-    cartItems,
-    removeFromCart,
-    getCartCount,
-    updateCartItem,
-    navigate,
-    getCartAmount,
-    user,
-    axios,
-    setCartItems,
-  } = useAppContext();
+  // const {
+  //   products,
+  //   currency,
+  //   cartItems,
+  //   removeFromCart,
+  //   getCartCount,
+  //   updateCartItem,
+  //   navigate,//
+  //   getCartAmount,
+  //   user,
+  //   axios, //
+  //   setCartItems,
+  // } = useAppContext();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [cartArray, setCartArray] = useState([]);
   const [addresses, setAddresses] = useState([]);
   const [showAddress, setShowAddress] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [paymentOption, setPaymentOption] = useState("COD");
+  const cartCount = useSelector(getCartCount);
+  const cartAmount = useSelector(getCartAmount);
+  const products = useSelector((state) => state.product.products);
+  const currency = useSelector((state) => state.ui.currency);
+  const cartItems = useSelector((state) => state.cart.cartItems);
+  const user = useSelector((state) => state.auth.user);
+
+  const tax = (cartAmount * 2) / 100;
+  const total = cartAmount + tax;
 
   const getCart = () => {
     let tempArray = [];
     for (const key in cartItems) {
       const product = products.find((item) => item._id === key);
-      product.quantity = cartItems[key];
-      tempArray.push(product);
+      if (product) {
+        tempArray.push({
+          ...product,
+          quantity: cartItems[key],
+        });
+      }
     }
     setCartArray(tempArray);
   };
 
   const getUserAddress = async () => {
     try {
-      const { data } = await axios.get("/api/address/get");
+      const { data } = await axiosInstance.get("/api/address/get");
       if (data.success) {
         setAddresses(data.addresses);
         if (data.addresses.length > 0) {
@@ -57,7 +82,7 @@ const Cart = () => {
 
       //Place order with COD
       if (paymentOption === "COD") {
-        const { data } = await axios.post("/api/order/cod", {
+        const { data } = await axiosInstance.post("/api/order/cod", {
           userId: user._id,
           items: cartArray.map((item) => ({
             product: item._id,
@@ -67,14 +92,14 @@ const Cart = () => {
         });
         if (data.success) {
           toast.success(data.message);
-          setCartItems({});
+          dispatch(setCartItems({}));
           navigate("/my-orders");
         } else {
           toast.error(data.message);
         }
       } else {
         //Place order with Stripe
-        const { data } = await axios.post("/api/order/stripe", {
+        const { data } = await axiosInstance.post("/api/order/stripe", {
           userId: user._id,
           items: cartArray.map((item) => ({
             product: item._id,
@@ -110,7 +135,7 @@ const Cart = () => {
       <div className="flex-1 max-w-4xl">
         <h1 className="text-3xl font-medium mb-6">
           Shopping Cart{" "}
-          <span className="text-sm text-primary ">{getCartCount()} Items</span>
+          <span className="text-sm text-primary ">{cartCount} Items</span>
         </h1>
 
         <div className="grid grid-cols-[2fr_1fr_1fr] text-gray-500 text-base font-medium pb-3">
@@ -156,7 +181,12 @@ const Cart = () => {
 
                     <select
                       onChange={(e) =>
-                        updateCartItem(product._id, Number(e.target.value))
+                        dispatch(
+                          updateCartItem({
+                            itemId: product._id,
+                            quantity: Number(e.target.value),
+                          }),
+                        )
                       }
                       value={cartItems[product._id]}
                       className="outline-none"
@@ -182,7 +212,7 @@ const Cart = () => {
             </p>
 
             <button
-              onClick={() => removeFromCart(product._id)}
+              onClick={() => dispatch(removeFromCart(product._id))}
               className="cursor-pointer mx-auto"
             >
               <img
@@ -236,6 +266,7 @@ const Cart = () => {
               <div className="absolute top-12 py-1 bg-white border border-gray-300 text-sm w-full">
                 {addresses.map((address, index) => (
                   <p
+                    key={index}
                     onClick={() => {
                       setSelectedAddress(address);
                       setShowAddress(false);
@@ -275,7 +306,7 @@ const Cart = () => {
           <p className="flex justify-between">
             <span>Price</span>
             <span>
-              {getCartAmount()}
+              {cartAmount}
               {currency}
             </span>
           </p>
@@ -288,7 +319,7 @@ const Cart = () => {
           <p className="flex justify-between">
             <span>Tax (2%)</span>
             <span>
-              {(getCartAmount() * 2) / 100}
+              {tax}
               {currency}
             </span>
           </p>
@@ -296,7 +327,7 @@ const Cart = () => {
           <p className="flex justify-between text-lg font-medium mt-3">
             <span>Total Amount:</span>
             <span>
-              {getCartAmount() + (getCartAmount() * 2) / 100}
+              {total}
               {currency}
             </span>
           </p>

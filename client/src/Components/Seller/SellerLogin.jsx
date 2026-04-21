@@ -1,21 +1,32 @@
 import React, { useEffect, useState } from "react";
-import { useAppContext } from "../../Context/AppContext";
+import { useDispatch, useSelector } from "react-redux";
+// import { useAppContext } from "../../Context/AppContext";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../api/axios";
+
+import { fetchSeller } from "../../store/features/auth/authSlice";
 
 const SellerLogin = () => {
-  const { isSeller, setIsSeller, navigate, axios } = useAppContext();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const isSeller = useSelector((state) => state.auth.isSeller);
+
+  // const { isSeller, setIsSeller, navigate, axios } = useAppContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const onSubmitHandler = async (event) => {
     try {
       event.preventDefault();
-      const { data } = await axios.post("/api/seller/login", {
+      const { data } = await axiosInstance.post("/api/seller/login", {
         email,
         password,
       });
       if (data.success) {
-        setIsSeller(true);
+        // setIsSeller(true);
+        dispatch(fetchSeller());
         navigate("/seller");
       } else {
         toast.error(data.message);
@@ -29,7 +40,7 @@ const SellerLogin = () => {
     if (isSeller) {
       navigate("/seller");
     }
-  }, [isSeller]);
+  }, [isSeller, navigate]);
 
   return (
     !isSeller && (

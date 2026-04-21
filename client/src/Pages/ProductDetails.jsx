@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { useAppContext } from "../Context/AppContext";
-import { Link, useParams } from "react-router-dom";
+// import { useAppContext } from "../Context/AppContext";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { assets } from "../assets/assets";
 import ProductCard from "../Components/ProductCard";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../store/features/cart/cartSlice";
 
 const ProductDetails = () => {
-  const { products, navigate, currency, addToCart } = useAppContext();
+  // const { products, navigate, currency, addToCart } = useAppContext();
+  const products = useSelector((state) => state.product.products);
+  const navigate = useNavigate();
+  const currency = useSelector((state) => state.ui.currency);
+  const dispatch = useDispatch();
   const { id } = useParams();
 
   const [thumbnail, setThumbnail] = useState(null);
@@ -14,14 +20,14 @@ const ProductDetails = () => {
   const product = products.find((item) => item._id === id);
 
   useEffect(() => {
-    if (products.length > 0) {
-      let productsCopy = products.slice();
-      productsCopy = productsCopy.filter(
-        (item) => product.category === item.category,
+    if (products.length > 0 && product) {
+      let productsCopy = products.filter(
+        (item) =>
+          item.category === product.category && item._id !== product._id,
       );
       setRelatedProducts(productsCopy.slice(0, 5));
     }
-  }, [products]);
+  }, [products, product]);
 
   useEffect(() => {
     setThumbnail(product?.image[0] ? product.image[0] : null);
@@ -44,7 +50,7 @@ const ProductDetails = () => {
             <div className="flex flex-col gap-3">
               {product.image.map((image, index) => (
                 <div
-                  key={index}
+                  key={image}
                   onClick={() => setThumbnail(image)}
                   className="border max-w-24 border-gray-500/30 rounded overflow-hidden cursor-pointer"
                 >
@@ -55,7 +61,7 @@ const ProductDetails = () => {
 
             <div className="border border-gray-500/30 max-w-100 rounded overflow-hidden">
               <img
-                src={thumbnail}
+                src={thumbnail || product.image[0 ]}
                 alt="Selected product"
                 className="w-full h-full object-cover"
               />
@@ -103,7 +109,7 @@ const ProductDetails = () => {
 
             <div className="flex items-center mt-10 gap-4 text-base">
               <button
-                onClick={() => addToCart(product._id)}
+                onClick={() => dispatch(addToCart(product._id))}
                 className="w-full py-3.5 cursor-pointer font-medium bg-gray-100 text-gray-800/80 hover:bg-gray-200 transition"
               >
                 Add to Cart
@@ -111,7 +117,7 @@ const ProductDetails = () => {
 
               <button
                 onClick={() => {
-                  addToCart(product._id);
+                  dispatch(addToCart(product._id));
                   navigate("/cart");
                 }}
                 className="w-full py-3.5 cursor-pointer font-medium bg-primary text-white hover:bg-primary-dull transition"

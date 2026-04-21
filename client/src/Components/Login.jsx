@@ -1,31 +1,35 @@
 import React, { useState } from "react";
-import { useAppContext } from "../Context/AppContext";
+// import { useAppContext } from "../Context/AppContext";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../api/axios";
+
+import { setUser, setShowUserLogin } from "../store/features/auth/authSlice";
 
 const Login = () => {
-  const { setShowUserLogin, setUser, axios, navigate } = useAppContext();
+  // const { setShowUserLogin, setUser, axios, navigate } = useAppContext();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [state, setState] = useState("login");
-
   const [name, setName] = useState("");
-
   const [email, setEmail] = useState("");
-
   const [password, setPassword] = useState("");
 
   const onSubmitHandler = async (event) => {
     try {
       event.preventDefault();
 
-      const { data } = await axios.post(`api/user/${state}`, {
+      const { data } = await axiosInstance.post(`api/user/${state}`, {
         name,
         email,
         password,
       });
       if (data.success) {
         navigate("/");
-        setUser(data.user);
-        setShowUserLogin(false);   
+        dispatch(setUser(data.user));
+        dispatch(setShowUserLogin(false));
       } else {
         toast.error(data.message);
       }

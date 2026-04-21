@@ -2,12 +2,16 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
-import { AppContextProvider } from "./Context/AppContext.jsx";
+// import { AppContextProvider } from "./Context/AppContext.jsx";
+import { Provider } from "react-redux";
+import { store } from "./store/store.js";
 
 createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
-    <AppContextProvider>
+  <Provider store={store}>
+    <BrowserRouter>
+      {/* <AppContextProvider> */}
       <App />
-    </AppContextProvider>
-  </BrowserRouter>
+      {/* </AppContextProvider> */}
+    </BrowserRouter>
+  </Provider>,
 );

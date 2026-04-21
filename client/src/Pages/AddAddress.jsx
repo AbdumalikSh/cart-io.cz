@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { assets } from "../assets/assets";
-import { useAppContext } from "../Context/AppContext";
+// import { useAppContext } from "../Context/AppContext";
 import toast from "react-hot-toast";
+import axiosInstance from "../api/axios";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const InputField = ({ type, placeholder, name, handleChange, address }) => (
   <input
@@ -17,7 +20,9 @@ const InputField = ({ type, placeholder, name, handleChange, address }) => (
 );
 
 const AddAddress = () => {
-  const { axios, user, navigate } = useAppContext();
+  // const { axios, user, navigate } = useAppContext();
+  const user = useSelector((state) => state.auth.user);
+  const navigate = useNavigate();
 
   const [address, setAddress] = useState({
     firstName: "",
@@ -38,13 +43,15 @@ const AddAddress = () => {
       ...prevAddress,
       [name]: value,
     }));
-    console.log(address);
+    // console.log(address);
   };
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post("/api/address/add", { address });
+      const { data } = await axiosInstance.post("/api/address/add", {
+        address,
+      });
       if (data.success) {
         toast.success(data.message);
         navigate("/cart");
@@ -58,9 +65,9 @@ const AddAddress = () => {
 
   useEffect(() => {
     if (!user) {
-      navigate("/cart");
+      navigate("/login");
     }
-  }, []);
+  }, [user, navigate]);
   return (
     <div className="mt-16 pb-16">
       <p className="text-2xl md:text-3xl text-gray-500">

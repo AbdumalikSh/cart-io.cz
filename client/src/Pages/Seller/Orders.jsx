@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useAppContext } from "../../Context/AppContext";
+// import { useAppContext } from "../../Context/AppContext";
 import { assets } from "../../assets/assets";
 import toast from "react-hot-toast";
+import axiosInstance from "../../api/axios";
+import { useSelector } from "react-redux";
 
 const Orders = () => {
-  const { currency, axios } = useAppContext();
+  // const { currency, axios } = useAppContext();
+  const currency = useSelector((state) => state.ui.currency);
   const [orders, setOrders] = useState([]);
 
   const fetchOrders = async () => {
     try {
-      const { data } = await axios.get("/api/order/seller");
+      const { data } = await axiosInstance.get("/api/order/seller");
       if (data.success) {
         setOrders(data.orders);
       } else {

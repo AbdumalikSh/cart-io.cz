@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useAppContext } from "../Context/AppContext";
+// import { useAppContext } from "../Context/AppContext";
 import ProductCard from "../Components/ProductCard";
+import { useSelector } from "react-redux";
 
 const AllProducts = () => {
-  const { products, searchQuery } = useAppContext();
+  // const { products, searchQuery } = useAppContext();
+  const products = useSelector((state) => state.product.products);
+  const searchQuery = useSelector((state) => state.ui.searchQuery);
 
   const [filteredProducts, setFilteredProducts] = useState([]);
 
@@ -11,8 +14,8 @@ const AllProducts = () => {
     if (searchQuery.length > 0) {
       setFilteredProducts(
         products.filter((product) =>
-          product.name.toLowerCase().includes(searchQuery.toLowerCase())
-        )
+          product.name.toLowerCase().includes(searchQuery.toLowerCase()),
+        ),
       );
     } else {
       setFilteredProducts(products);

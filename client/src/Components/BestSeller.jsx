@@ -1,9 +1,11 @@
 import React from "react";
 import ProductCard from "./ProductCard";
-import { useAppContext } from "../Context/AppContext";
+import { useSelector } from "react-redux";
+// import { useAppContext } from "../Context/AppContext";
 
 const BestSeller = () => {
-  const { products } = useAppContext();
+  // const { products } = useAppContext();
+  const products = useSelector((state) => state.product.products);
   return (
     <div className="mt-16">
       <p className="text-2xl md:text-3xl font-medium">Best Sellers</p>

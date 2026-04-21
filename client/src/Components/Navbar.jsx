@@ -1,28 +1,42 @@
 import React, { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
-import { useAppContext } from "../Context/AppContext";
+// import { useAppContext } from "../Context/AppContext";
 import toast from "react-hot-toast";
+import axiosInstance from "../api/axios";
+import { useDispatch, useSelector } from "react-redux";
+
+import { setUser, setShowUserLogin } from "../store/features/auth/authSlice";
+import { setSearchQuery } from "../store/features/ui/uiSlice";
+import { getCartCount } from "../store/features/cart/cartSlice";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
-  const {
-    user,
-    setUser,
-    setShowUserLogin,
-    navigate,
-    searchQuery,
-    setSearchQuery,
-    getCartCount,
-    axios,
-  } = useAppContext();
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const user = useSelector((state) => state.auth.user);
+  const searchQuery = useSelector((state) => state.ui.searchQuery);
+  const cartCount = useSelector(getCartCount);
+
+  // const {
+  //   user,
+  //   setUser,
+  //   setShowUserLogin,
+  //   navigate,
+  //   searchQuery,
+  //   setSearchQuery,
+  //   getCartCount,
+  //   axios,
+  // } = useAppContext();
 
   const logout = async () => {
     try {
-      const { data } = await axios.get("/api/user/logout");
+      const { data } = await axiosInstance.get("/api/user/logout");
       if (data.success) {
         toast.success(data.message);
-        setUser(null);
+        dispatch(setUser(null));
         navigate("/");
       } else {
         toast.error(data.message);
@@ -33,10 +47,10 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    if (searchQuery.length > 0) {
+    if (searchQuery?.length > 0) {
       navigate("/products");
     }
-  }, [searchQuery]);
+  }, [searchQuery, navigate]);
 
   return (
     <nav className="flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-gray-300 bg-white relative transition-all">
@@ -57,7 +71,7 @@ const Navbar = () => {
 
         <div className="hidden lg:flex items-center text-sm gap-2 border border-gray-300 px-3 rounded-full">
           <input
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => dispatch(setSearchQuery(e.target.value))}
             className="py-1.5 w-full bg-transparent outline-none placeholder-gray-500"
             type="text"
             placeholder="Search products"
@@ -81,7 +95,7 @@ const Navbar = () => {
         </div>
         {!user ? (
           <button
-            onClick={() => setShowUserLogin(true)}
+            onClick={() => dispatch(setShowUserLogin(true))}
             className="cursor-pointer px-8 py-2 bg-primary hover:bg-primary-dull transition text-white rounded-full"
           >
             Login
@@ -128,7 +142,7 @@ const Navbar = () => {
             className="w-6 opacity-80"
           />
           <button className="absolute -top-2 -right-3 text-xs text-white bg-primary w-[18px] h-[18px] rounded-full">
-            {getCartCount()}
+            {cartCount}
           </button>
         </div>
         <button
@@ -165,7 +179,7 @@ const Navbar = () => {
             <button
               onClick={() => {
                 setOpen(false);
-                setShowUserLogin(true);
+                dispatch(setShowUserLogin(true));
               }}
               className="cursor-pointer px-6 py-2 mt-2 bg-primary hover:bg-primary-dull transition text-white rounded-full text-sm"
             >

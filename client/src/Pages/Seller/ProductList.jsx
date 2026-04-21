@@ -1,15 +1,24 @@
 import React from "react";
-import { useAppContext } from "../../Context/AppContext";
+// import { useAppContext } from "../../Context/AppContext";
 import toast from "react-hot-toast";
+import axiosInstance from "../../api/axios";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProducts } from "../../store/features/product/productSlice";
 
 const ProductList = () => {
-  const { products, currency, axios, fetchProducts } = useAppContext();
+  // const { products, currency, axios, fetchProducts } = useAppContext();
+  const dispatch = useDispatch();
+  const products = useSelector((state) => state.product.products);
+  const currency = useSelector((state) => state.ui.currency);
 
   const toggleStock = async (id, inStock) => {
     try {
-      const { data } = await axios.post("/api/product/stock", { id, inStock });
+      const { data } = await axiosInstance.post("/api/product/stock", {
+        id,
+        inStock,
+      });
       if (data.success) {
-        fetchProducts();
+        dispatch(fetchProducts());
         toast.success(data.message);
       } else {
         toast.error(data.message);
@@ -41,7 +50,7 @@ const ProductList = () => {
                   <td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3 truncate">
                     <div className="border border-gray-300 rounded overflow-hidden">
                       <img
-                        src={product.image[0]}
+                        src={product.image?.[0]}
                         alt="Product"
                         className="w-16"
                       />
@@ -58,7 +67,7 @@ const ProductList = () => {
                   <td className="px-4 py-3">
                     <label className="relative inline-flex items-center cursor-pointer text-gray-900 gap-3">
                       <input
-                        onClick={() =>
+                        onChange={() =>
                           toggleStock(product._id, !product.inStock)
                         }
                         checked={product.inStock}
