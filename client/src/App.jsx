@@ -3,7 +3,7 @@ import Home from "./Pages/Home";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import Footer from "./Components/Footer";
-import { useAppContext } from "./Context/AppContext";
+// import { useAppContext } from "./Context/AppContext";
 import Login from "./Components/Login";
 import AllProducts from "./Pages/AllProducts";
 import ProductCategory from "./Pages/ProductCategory";
@@ -17,10 +17,13 @@ import AddProduct from "./Pages/Seller/AddProduct";
 import ProductList from "./Pages/Seller/ProductList";
 import Orders from "./Pages/Seller/Orders";
 import Loading from "./Components/Loading";
+import { useSelector } from "react-redux";
 
 const App = () => {
   const isSellerPath = useLocation().pathname.includes("seller");
-  const { showUserLogin, isSeller } = useAppContext();
+  // const { showUserLogin, isSeller } = useAppContext();
+  const showUserLogin = useSelector((state) => state.auth.showUserLogin);
+  const isSeller = useSelector((state) => state.auth.isSeller);
 
   return (
     <div className="text-default min-h-screen text-gray-700 bg-white">
